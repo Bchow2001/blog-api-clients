@@ -10,7 +10,7 @@ const CommentSchema = new Schema({
 });
 
 CommentSchema.virtual("url").get(function () {
-	return `/comments/${this._id}`;
+	return `/posts/${this.post}/comments/${this._id}`;
 });
 
 module.exports = mongoose.model("Comment", CommentSchema);

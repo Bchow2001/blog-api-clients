@@ -15,16 +15,16 @@ exports.user_detail = asyncHandler(async (req, res, next) => {
 });
 
 // POST User
-exports.user_create_post = asyncHandler(async (req, res, next) => {
+exports.user_create = asyncHandler(async (req, res, next) => {
 	res.json({ message: "User POST not implemented" });
 });
 
 // PUT User
-exports.user_update_post = asyncHandler(async (req, res, next) => {
+exports.user_update = asyncHandler(async (req, res, next) => {
 	res.json({ message: "User PUT not implemented" });
 });
 
 // DELETE User
-exports.user_delete_post = asyncHandler(async (req, res, next) => {
+exports.user_delete = asyncHandler(async (req, res, next) => {
 	res.json({ message: "User DELETE not implemented" });
 });

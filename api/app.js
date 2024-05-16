@@ -7,6 +7,8 @@ const logger = require("morgan");
 const mongoose = require("mongoose");
 
 const indexRouter = require("./routes/index");
+const postRouter = require("./routes/postRoutes");
+const userRouter = require("./routes/userRoutes");
 
 const app = express();
 
@@ -20,9 +22,6 @@ async function main() {
 	console.log("Connected to MongoDB");
 }
 
-// view engine setup
-app.set("views", path.join(__dirname, "views"));
-
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -30,6 +29,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
+app.use("/posts", postRouter);
+app.use("/users", userRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -44,7 +45,7 @@ app.use((err, req, res, next) => {
 
 	// render the error page
 	res.status(err.status || 500);
-	res.render("error");
+	res.json("error");
 });
 
 module.exports = app;

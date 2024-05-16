@@ -7,8 +7,8 @@ const UserSchema = new Schema({
 	password: { type: String, required: true },
 	first_name: { type: String, required: true, maxLength: 100 },
 	last_name: { type: String, required: true, maxLength: 100 },
-	profile_pic: { type: String, required: true },
-	author: { type: Boolean, required: true },
+	profile_pic: { type: String },
+	isAuthor: { type: Boolean, required: true },
 	joined: { type: Date, required: true },
 });
 
