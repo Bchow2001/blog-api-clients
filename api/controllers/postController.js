@@ -18,7 +18,10 @@ exports.index = asyncHandler(async (req, res, next) => {
 
 // GET Single Post
 exports.post_detail = asyncHandler(async (req, res, next) => {
-	const post = await Post.findById(req.params.id).populate("author").exec();
+	const [post, comments] = await Promise.all([
+		Post.findById(req.params.postid).populate("author").exec(),
+		Comment.find({ post: req.params.postid }).exec(),
+	]);
 
 	if (post === null) {
 		// No results.
@@ -27,7 +30,7 @@ exports.post_detail = asyncHandler(async (req, res, next) => {
 		return next(err);
 	}
 
-	res.json({ post });
+	res.json({ post, comments });
 });
 
 // POST Post creation
@@ -50,8 +53,9 @@ exports.post_create = [
 			text: req.body.text,
 			timestamp: new Date(),
 			published: req.body.published,
-			author: req.user.id,
+			// author: req.user.id,
 		});
+
 		if (!errors.isEmpty()) {
 			// Send JSON back with sanitized value
 			res.json({ post, errors });
@@ -82,8 +86,8 @@ exports.post_update = [
 			text: req.body.text,
 			timestamp: new Date(),
 			published: req.body.published,
-			author: req.user.id,
-			_id: req.params.id,
+			// author: req.user.id,
+			_id: req.params.postid,
 		});
 
 		if (!errors.isEmpty()) {
@@ -91,7 +95,7 @@ exports.post_update = [
 			res.json({ post, errors });
 		} else {
 			const updatedPost = await Post.findByIdAndUpdate(
-				req.params.id,
+				req.params.postid,
 				post,
 				{},
 			);
@@ -102,20 +106,84 @@ exports.post_update = [
 
 // DELETE Post
 exports.post_delete = asyncHandler(async (req, res, next) => {
-	res.json({ message: "Post DELETE not implemented" });
+	const post = await Post.findById(req.params.postid).exec();
+
+	if (post === null) {
+		// No results.
+		res.redirect("/posts");
+	} else {
+		await Post.findByIdAndDelete(req.params.postid);
+		res.redirect("/posts");
+	}
 });
 
 // POST Comment creation
-exports.comment_create = asyncHandler(async (req, res, next) => {
-	res.json({ message: "Comment POST not implemented" });
-});
+exports.comment_create = [
+	body("text")
+		.trim()
+		.notEmpty()
+		.withMessage("Comment must not be empty")
+		.escape(),
+
+	asyncHandler(async (req, res, next) => {
+		const errors = validationResult(req);
+		const comment = new Comment({
+			text: req.body.text,
+			timestamp: new Date(),
+			// author: req.user.id,
+			post: req.params.postid,
+		});
+
+		if (!errors.isEmpty()) {
+			// There are errors send JSON back with sanitized values
+			res.json({ comment, errors });
+		} else {
+			await comment.save();
+			res.redirect(`/posts/${req.params.postid}`);
+		}
+	}),
+];
 
 // PUT Comment
-exports.comment_update = asyncHandler(async (req, res, next) => {
-	res.json({ message: "Comment UPDATE not implemented" });
-});
+exports.comment_update = [
+	body("text")
+		.trim()
+		.notEmpty()
+		.withMessage("Comment must not be empty")
+		.escape(),
+	asyncHandler(async (req, res, next) => {
+		const errors = validationResult(req);
+		const comment = new Comment({
+			text: req.body.text,
+			timestamp: new Date(),
+			// author: req.user.id,
+			post: req.params.postid,
+			_id: req.params.commentid,
+		});
+
+		if (!errors.isEmpty()) {
+			// There are errors send JSON back with sanitized values
+			res.json({ comment, errors });
+		} else {
+			const updatedComment = await Comment.findByIdAndUpdate(
+				req.params.commentid,
+				comment,
+				{},
+			);
+			res.redirect(`/posts/${req.params.postid}`);
+		}
+	}),
+];
 
 // DELETE Comment
 exports.comment_delete = asyncHandler(async (req, res, next) => {
-	res.json({ message: "Comment DELETE not implemented" });
+	const comment = await Comment.findById(req.params.commentid).exec();
+
+	if (comment === null) {
+		// No results.
+		res.redirect(`/posts/${req.params.postid}`);
+	} else {
+		await Comment.findByIdAndDelete(req.params.commentid);
+		res.redirect(`/posts/${req.params.postid}`);
+	}
 });

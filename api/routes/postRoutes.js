@@ -23,9 +23,9 @@ router.delete("/:postid", postController.post_delete);
 router.post("/:postid/comments", postController.comment_create);
 
 // PUT comment
-router.put("/:postid/comments/commentid", postController.comment_update);
+router.put("/:postid/comments/:commentid", postController.comment_update);
 
 // DELETE comment
-router.delete("/:postid/comments/commentid", postController.comment_delete);
+router.delete("/:postid/comments/:commentid", postController.comment_delete);
 
 module.exports = router;
