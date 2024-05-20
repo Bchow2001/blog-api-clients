@@ -10,6 +10,9 @@ router.get("/", userController.user_list);
 // POST User
 router.post("/", userController.user_create);
 
+// Log-in
+router.post("/login", userController.user_login);
+
 // GET single user
 router.get("/:userid", userController.user_detail);
 

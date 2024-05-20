@@ -1,8 +1,13 @@
+require("dotenv").config();
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+const passport = require("passport");
+const jwt = require("jsonwebtoken");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
 const User = require("../models/user");
+require("../config");
 
 // GET Users
 exports.user_list = asyncHandler(async (req, res, next) => {
@@ -37,11 +42,26 @@ exports.user_create = [
 		.trim()
 		.isLength(6)
 		.withMessage("Username must be at least 6 characters")
+		.custom(async (value) => {
+			const userExists = await User.findOne({
+				username: value,
+			})
+				.collation({ locale: "en", strength: 2 })
+				.exec();
+			if (userExists) {
+				throw new Error("Username is already in use");
+			}
+		})
 		.escape(),
 	body("password")
 		.trim()
 		.isLength(8)
 		.withMessage("Password must be at least 8 characters")
+		.escape(),
+	body("confirm_password")
+		.trim()
+		.custom((value, { req }) => value === req.body.password)
+		.withMessage("Passwords must match")
 		.escape(),
 	body("first_name")
 		.trim()
@@ -58,8 +78,6 @@ exports.user_create = [
 		const errors = validationResult(req);
 		const user = new User({
 			username: req.body.username,
-			// Add encryption here
-			password: req.body.password,
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
 			// Add multer here
@@ -72,9 +90,18 @@ exports.user_create = [
 			// Send JSON back with sanitized value
 			res.json({ user, errors });
 		} else {
-			await user.save();
-			// Change redirect to posts after debug
-			res.redirect("/users");
+			// Data from form is valid and username is not duplicate
+			// Hash the password and add to user object
+			bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
+				if (err) {
+					next(err);
+				} else {
+					user.password = hashedPassword;
+					await user.save();
+					// change redirect to posts after debug
+					res.redirect("/users");
+				}
+			});
 		}
 	}),
 ];
@@ -143,3 +170,49 @@ exports.user_delete = asyncHandler(async (req, res, next) => {
 		res.redirect("/users");
 	}
 });
+
+// LOG IN User
+exports.user_login = [
+	body("username")
+		.trim()
+		.notEmpty()
+		.withMessage("Please enter a username")
+		.escape(),
+	body("password")
+		.trim()
+		.notEmpty()
+		.withMessage("Please enter a password")
+		.escape(),
+
+	asyncHandler(async (req, res, next) => {
+		passport.authenticate("local", { session: false }, (error, user) => {
+			if (error || !user) {
+				res.status(400).json({ error });
+			}
+			const { username } = user;
+			/** This is what ends up in our JWT */
+			const payload = {
+				username,
+				expires:
+					Date.now() + parseInt(process.env.JWT_EXPIRATION_MS, 10),
+			};
+
+			/** assigns payload to req.user */
+			req.login(payload, { session: false }, (error) => {
+				if (error) {
+					res.status(400).send({ error });
+				}
+
+				/** generate a signed json web token and return it in the response */
+				const token = jwt.sign(
+					JSON.stringify(payload),
+					process.env.JWT_SECRET,
+				);
+
+				/** assign our jwt to the cookie */
+				res.cookie("jwt", jwt, { httpOnly: true, secure: true });
+				res.status(200).send({ username });
+			})(req, res);
+		});
+	}),
+];
