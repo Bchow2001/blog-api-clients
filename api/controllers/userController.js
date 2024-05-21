@@ -201,15 +201,10 @@ exports.user_login = [
 					if (!user) {
 						return res.json({ message });
 					}
-					const { username } = user;
+					const { _id } = user;
 
 					/** This is what ends up in our JWT */
-					const payload = {
-						username,
-						expires:
-							Date.now() +
-							parseInt(process.env.JWT_EXPIRATION_MS, 10),
-					};
+					const payload = { _id };
 
 					/** assigns payload to req.user */
 					req.login(payload, { session: false }, (error) => {
@@ -218,21 +213,17 @@ exports.user_login = [
 						}
 
 						/** generate a signed json web token and return it in the response */
-						const token = jwt.sign(
-							JSON.stringify(payload),
+						const accessToken = jwt.sign(
+							payload,
 							process.env.JWT_SECRET,
+							{ expiresIn: "10d" },
 						);
 
 						/** assign our jwt to the cookie */
-						res.cookie("jwt", token, {
-							httpOnly: true,
-							secure: true,
-						});
-						return res.status(200);
+						res.json({ accessToken });
 					});
 				},
-			);
-			res.redirect("/users");
+			)(req, res, next);
 		}
 	}),
 ];
