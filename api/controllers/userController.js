@@ -185,34 +185,54 @@ exports.user_login = [
 		.escape(),
 
 	asyncHandler(async (req, res, next) => {
-		passport.authenticate("local", { session: false }, (error, user) => {
-			if (error || !user) {
-				res.status(400).json({ error });
-			}
-			const { username } = user;
-			/** This is what ends up in our JWT */
-			const payload = {
-				username,
-				expires:
-					Date.now() + parseInt(process.env.JWT_EXPIRATION_MS, 10),
-			};
+		const errors = validationResult(req);
 
-			/** assigns payload to req.user */
-			req.login(payload, { session: false }, (error) => {
-				if (error) {
-					res.status(400).send({ error });
-				}
+		if (!errors.isEmpty()) {
+			// There are errors
+			res.json({ errors });
+		} else {
+			passport.authenticate(
+				"local",
+				{ session: false },
+				(err, user, message) => {
+					if (err) {
+						return res.json({ err });
+					}
+					if (!user) {
+						return res.json({ message });
+					}
+					const { username } = user;
 
-				/** generate a signed json web token and return it in the response */
-				const token = jwt.sign(
-					JSON.stringify(payload),
-					process.env.JWT_SECRET,
-				);
+					/** This is what ends up in our JWT */
+					const payload = {
+						username,
+						expires:
+							Date.now() +
+							parseInt(process.env.JWT_EXPIRATION_MS, 10),
+					};
 
-				/** assign our jwt to the cookie */
-				res.cookie("jwt", jwt, { httpOnly: true, secure: true });
-				res.status(200).send({ username });
-			})(req, res);
-		});
+					/** assigns payload to req.user */
+					req.login(payload, { session: false }, (error) => {
+						if (error) {
+							return res.status(400).send({ error });
+						}
+
+						/** generate a signed json web token and return it in the response */
+						const token = jwt.sign(
+							JSON.stringify(payload),
+							process.env.JWT_SECRET,
+						);
+
+						/** assign our jwt to the cookie */
+						res.cookie("jwt", token, {
+							httpOnly: true,
+							secure: true,
+						});
+						return res.status(200);
+					});
+				},
+			);
+			res.redirect("/users");
+		}
 	}),
 ];
