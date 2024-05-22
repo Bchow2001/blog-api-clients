@@ -53,7 +53,7 @@ exports.post_create = [
 			text: req.body.text,
 			timestamp: new Date(),
 			published: req.body.published,
-			// author: req.user.id,
+			author: req.user._id,
 		});
 
 		if (!errors.isEmpty()) {
@@ -61,7 +61,7 @@ exports.post_create = [
 			res.json({ post, errors });
 		} else {
 			await post.save();
-			res.redirect("/posts");
+			res.redirect("/api/posts");
 		}
 	}),
 ];
@@ -86,7 +86,7 @@ exports.post_update = [
 			text: req.body.text,
 			timestamp: new Date(),
 			published: req.body.published,
-			// author: req.user.id,
+			author: req.user.id,
 			_id: req.params.postid,
 		});
 
@@ -110,10 +110,10 @@ exports.post_delete = asyncHandler(async (req, res, next) => {
 
 	if (post === null) {
 		// No results.
-		res.redirect("/posts");
+		res.redirect("/api/posts");
 	} else {
 		await Post.findByIdAndDelete(req.params.postid);
-		res.redirect("/posts");
+		res.redirect("/api/posts");
 	}
 });
 
@@ -130,7 +130,7 @@ exports.comment_create = [
 		const comment = new Comment({
 			text: req.body.text,
 			timestamp: new Date(),
-			// author: req.user.id,
+			author: req.user.id,
 			post: req.params.postid,
 		});
 
@@ -139,7 +139,7 @@ exports.comment_create = [
 			res.json({ comment, errors });
 		} else {
 			await comment.save();
-			res.redirect(`/posts/${req.params.postid}`);
+			res.redirect(`/api/posts/${req.params.postid}`);
 		}
 	}),
 ];
@@ -156,7 +156,7 @@ exports.comment_update = [
 		const comment = new Comment({
 			text: req.body.text,
 			timestamp: new Date(),
-			// author: req.user.id,
+			author: req.user.id,
 			post: req.params.postid,
 			_id: req.params.commentid,
 		});
@@ -170,7 +170,7 @@ exports.comment_update = [
 				comment,
 				{},
 			);
-			res.redirect(`/posts/${req.params.postid}`);
+			res.redirect(`/api/posts/${req.params.postid}`);
 		}
 	}),
 ];
@@ -181,9 +181,9 @@ exports.comment_delete = asyncHandler(async (req, res, next) => {
 
 	if (comment === null) {
 		// No results.
-		res.redirect(`/posts/${req.params.postid}`);
+		res.redirect(`/api/posts/${req.params.postid}`);
 	} else {
 		await Comment.findByIdAndDelete(req.params.commentid);
-		res.redirect(`/posts/${req.params.postid}`);
+		res.redirect(`/api/posts/${req.params.postid}`);
 	}
 });

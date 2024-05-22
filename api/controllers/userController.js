@@ -99,7 +99,7 @@ exports.user_create = [
 					user.password = hashedPassword;
 					await user.save();
 					// change redirect to posts after debug
-					res.redirect("/users");
+					res.redirect("/api/users");
 				}
 			});
 		}
@@ -164,10 +164,10 @@ exports.user_delete = asyncHandler(async (req, res, next) => {
 
 	if (user === null) {
 		// No results.
-		res.redirect("/users");
+		res.redirect("/api/users");
 	} else {
 		await User.findByIdAndDelete(req.params.userid);
-		res.redirect("/users");
+		res.redirect("/api/users");
 	}
 });
 
