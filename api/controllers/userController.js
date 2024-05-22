@@ -216,7 +216,7 @@ exports.user_login = [
 						const accessToken = jwt.sign(
 							payload,
 							process.env.JWT_SECRET,
-							{ expiresIn: "10d" },
+							{ expiresIn: "30m" },
 						);
 
 						/** assign our jwt to the cookie */
