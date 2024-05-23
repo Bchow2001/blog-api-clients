@@ -61,5 +61,6 @@ typings/
 .next
 
 .eslintrc.json
+.eslintrc.cjs
 
 config.js
