@@ -5,6 +5,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const indexRouter = require("./routes/index");
 const postRouter = require("./routes/postRoutes");
@@ -27,6 +28,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+const corsOptions = {};
+app.use(cors());
 
 app.use("/", indexRouter);
 app.use("/api/posts", postRouter);
