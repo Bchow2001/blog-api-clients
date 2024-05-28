@@ -83,7 +83,6 @@ exports.user_create = [
 			// Add multer here
 			profile_pic: req.body.profile_pic,
 			isAuthor: req.body.isAuthor,
-			joined: new Date(),
 		});
 
 		if (!errors.isEmpty()) {
@@ -139,8 +138,6 @@ exports.user_update = [
 			last_name: req.body.last_name,
 			// Add multer here
 			profile_pic: req.body.profile_pic,
-			isAuthor: req.body.isAuthor,
-			joined: new Date(),
 			_id: req.params.userid,
 		});
 

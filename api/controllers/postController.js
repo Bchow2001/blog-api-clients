@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const { DateTime } = require("luxon");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
 const User = require("../models/user");
@@ -9,8 +10,8 @@ exports.index = asyncHandler(async (req, res, next) => {
 	const posts = await Post.find({ published: true })
 		.sort({ timestamp: -1 })
 		.limit(20)
-		.select("title timestamp author")
-		.populate("author")
+		.select("title createdAt updatedAt author")
+		.populate("author", "username -_id")
 		.exec();
 
 	res.json({ posts });
@@ -23,8 +24,8 @@ exports.post_detail = asyncHandler(async (req, res, next) => {
 		Comment.find({ post: req.params.postid }).exec(),
 	]);
 
-	if (post === null) {
-		// No results.
+	if (post === null || post.published === false) {
+		// No results or post has not been published
 		const err = new Error("Post not found");
 		err.status = 404;
 		return next(err);
@@ -51,7 +52,6 @@ exports.post_create = [
 		const post = new Post({
 			title: req.body.title,
 			text: req.body.text,
-			timestamp: new Date(),
 			published: req.body.published,
 			author: req.user._id,
 		});
@@ -84,7 +84,6 @@ exports.post_update = [
 		const post = new Post({
 			title: req.body.title,
 			text: req.body.text,
-			timestamp: new Date(),
 			published: req.body.published,
 			author: req.user.id,
 			_id: req.params.postid,
@@ -129,7 +128,6 @@ exports.comment_create = [
 		const errors = validationResult(req);
 		const comment = new Comment({
 			text: req.body.text,
-			timestamp: new Date(),
 			author: req.user.id,
 			post: req.params.postid,
 		});
@@ -155,7 +153,6 @@ exports.comment_update = [
 		const errors = validationResult(req);
 		const comment = new Comment({
 			text: req.body.text,
-			timestamp: new Date(),
 			author: req.user.id,
 			post: req.params.postid,
 			_id: req.params.commentid,

@@ -9,7 +9,7 @@ const postController = require("../controllers/postController");
 // GET post list
 router.get(
 	"/",
-	passport.authenticate("jwt-view", { session: false }),
+	// passport.authenticate("jwt-view", { session: false }),
 	postController.index,
 );
 
