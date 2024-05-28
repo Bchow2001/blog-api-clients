@@ -1,6 +1,34 @@
 import "./App.css";
 import { useEffect, useState } from "react";
 
+function PostItem({ post }) {
+	return (
+		<li>
+			<a href={`http://localhost:3000/api/posts/${post._id}`}>
+				<h2>{post.title}</h2>
+			</a>
+			<h3>
+				Author:{" "}
+				{post.author.username ? post.author.username : "Anonymous"}
+			</h3>
+			<p>Created at: {post.createdAt}</p>
+			{post.createdAt !== post.updatedAt && (
+				<p>Updated at: {post.updatedAt}</p>
+			)}
+		</li>
+	);
+}
+
+function PostList({ posts }) {
+	return (
+		<ul>
+			{posts.map((post) => {
+				return <PostItem key={post._id} post={post} />;
+			})}
+		</ul>
+	);
+}
+
 function App() {
 	const [posts, setPosts] = useState(null);
 
@@ -11,8 +39,7 @@ function App() {
 					mode: "cors",
 				});
 				response = await response.json();
-				console.log(response);
-				setPosts(response);
+				setPosts(response.posts);
 			} catch (e) {
 				console.log(e);
 			}
@@ -22,10 +49,8 @@ function App() {
 
 	return (
 		<>
-			<p className="read-the-docs">
-				Click on the Vite and React logos to learn more
-			</p>
-			<div>{JSON.stringify(posts)}</div>
+			<h1>Posts</h1>
+			{posts !== null ? <PostList posts={posts} /> : null}
 		</>
 	);
 }

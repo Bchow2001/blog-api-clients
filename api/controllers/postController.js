@@ -8,7 +8,7 @@ const User = require("../models/user");
 // GET Posts
 exports.index = asyncHandler(async (req, res, next) => {
 	const posts = await Post.find({ published: true })
-		.sort({ timestamp: -1 })
+		.sort({ updatedAt: -1 })
 		.limit(20)
 		.select("title createdAt updatedAt author")
 		.populate("author", "username -_id")
