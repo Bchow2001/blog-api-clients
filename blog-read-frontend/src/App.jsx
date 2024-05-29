@@ -1,12 +1,13 @@
 import "./App.css";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function PostItem({ post }) {
 	return (
 		<li>
-			<a href={`http://localhost:3000/api/posts/${post._id}`}>
+			<Link to={`${post._id}`}>
 				<h2>{post.title}</h2>
-			</a>
+			</Link>
 			<h3>
 				Author:{" "}
 				{post.author.username ? post.author.username : "Anonymous"}
@@ -50,7 +51,7 @@ function App() {
 	return (
 		<>
 			<h1>Posts</h1>
-			{posts !== null ? <PostList posts={posts} /> : null}
+			{posts != null && <PostList posts={posts} />}
 		</>
 	);
 }

@@ -7,11 +7,7 @@ const router = express.Router();
 const postController = require("../controllers/postController");
 
 // GET post list
-router.get(
-	"/",
-	// passport.authenticate("jwt-view", { session: false }),
-	postController.index,
-);
+router.get("/", postController.index);
 
 // POST new post
 router.post(
@@ -21,11 +17,7 @@ router.post(
 );
 
 // GET single post
-router.get(
-	"/:postid",
-	passport.authenticate("jwt-view", { session: false }),
-	postController.post_detail,
-);
+router.get("/:postid", postController.post_detail);
 
 // PUT post
 router.put(

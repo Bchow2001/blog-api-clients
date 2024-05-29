@@ -21,7 +21,7 @@ exports.index = asyncHandler(async (req, res, next) => {
 exports.post_detail = asyncHandler(async (req, res, next) => {
 	const [post, comments] = await Promise.all([
 		Post.findById(req.params.postid).populate("author").exec(),
-		Comment.find({ post: req.params.postid }).exec(),
+		Comment.find({ post: req.params.postid }).populate("author").exec(),
 	]);
 
 	if (post === null || post.published === false) {
