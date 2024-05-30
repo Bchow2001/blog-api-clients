@@ -4,6 +4,7 @@ const { DateTime } = require("luxon");
 const Post = require("../models/post");
 const Comment = require("../models/comment");
 const User = require("../models/user");
+const post = require("../models/post");
 
 // GET Posts
 exports.index = asyncHandler(async (req, res, next) => {

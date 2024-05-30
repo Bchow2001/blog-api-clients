@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 
 function CommentItem({ comment }) {
 	return (
@@ -45,7 +45,10 @@ function Post() {
 		fetchPost();
 	}, [postId]);
 
-	if (post != null) {
+	if (post === undefined) {
+		const message = "Post was not found";
+		return <Navigate to="/error" state={{ message: message }} />;
+	} else if (post !== null) {
 		return (
 			<>
 				<h1>{post.title}</h1>

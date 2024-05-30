@@ -21,13 +21,17 @@ function PostItem({ post }) {
 }
 
 function PostList({ posts }) {
-	return (
-		<ul>
-			{posts.map((post) => {
-				return <PostItem key={post._id} post={post} />;
-			})}
-		</ul>
-	);
+	if (posts.length !== 0) {
+		return (
+			<ul>
+				{posts.map((post) => {
+					return <PostItem key={post._id} post={post} />;
+				})}
+			</ul>
+		);
+	} else {
+		return <h2>No Posts Found!</h2>;
+	}
 }
 
 function App() {
