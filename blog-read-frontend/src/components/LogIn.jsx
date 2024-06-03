@@ -1,8 +1,12 @@
 import { useState } from "react";
+import { Navigate } from "react-router-dom";
+import NavBar from "./NavBar";
 
 function LogIn() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [user, setUser] = useState(false);
+	const [error, setError] = useState("");
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -21,10 +25,17 @@ function LogIn() {
 				requestOptions,
 			);
 			response = await response.json();
-			setUsername("");
-			setPassword("");
-			const access = response.accessToken;
-			localStorage.setItem("accessToken", access);
+			if (response.accessToken) {
+				const access = response.accessToken;
+				localStorage.setItem("accessToken", access);
+				setUsername("");
+				setPassword("");
+				setError("");
+				setUser(true);
+			} else {
+				setPassword("");
+				setError(response.message.message);
+			}
 		} catch (e) {
 			console.log(e);
 		}
@@ -32,6 +43,7 @@ function LogIn() {
 
 	return (
 		<>
+			<NavBar user={false} />
 			<form onSubmit={handleSubmit}>
 				<div className="form-group">
 					<label htmlFor="username">Username: </label>
@@ -57,6 +69,8 @@ function LogIn() {
 				</div>
 				<button type="submit">Submit</button>
 			</form>
+			<div>{error !== "" && <p>{error}</p>}</div>
+			{user && <Navigate to="/posts" />}
 		</>
 	);
 }
