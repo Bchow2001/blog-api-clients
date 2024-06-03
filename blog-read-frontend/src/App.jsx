@@ -1,6 +1,7 @@
 import "./App.css";
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
+import NavBar from "./components/NavBar";
 
 function PostItem({ post }) {
 	return (
@@ -54,6 +55,7 @@ function App() {
 
 	return (
 		<>
+			<NavBar />
 			<h1>Posts</h1>
 			{posts != null && <PostList posts={posts} />}
 		</>
