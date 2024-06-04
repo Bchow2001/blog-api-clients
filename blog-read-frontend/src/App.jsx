@@ -37,15 +37,23 @@ function PostList({ posts }) {
 
 function App() {
 	const [posts, setPosts] = useState(null);
+	const [user, setUser] = useState(null);
 
 	useEffect(() => {
 		async function fetchPosts() {
 			try {
 				let response = await fetch("http://localhost:3000/api/posts", {
 					mode: "cors",
+					headers: new Headers({
+						Authorization: `Bearer ${localStorage.getItem(
+							"accessToken",
+						)}`,
+					}),
 				});
 				response = await response.json();
+				console.log(response);
 				setPosts(response.posts);
+				setUser(response.user);
 			} catch (e) {
 				console.log(e);
 			}
@@ -55,7 +63,7 @@ function App() {
 
 	return (
 		<>
-			<NavBar />
+			<NavBar user={user} />
 			<h1>Posts</h1>
 			{posts != null && <PostList posts={posts} />}
 		</>

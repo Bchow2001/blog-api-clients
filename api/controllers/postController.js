@@ -15,7 +15,8 @@ exports.index = asyncHandler(async (req, res, next) => {
 		.populate("author", "username -_id")
 		.exec();
 
-	res.json({ posts });
+	const user = req.user.username;
+	res.json({ posts, user });
 });
 
 // GET Single Post
