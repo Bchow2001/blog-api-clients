@@ -81,13 +81,12 @@ exports.user_create = [
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
 			// Add multer here
-			profile_pic: req.body.profile_pic,
-			isAuthor: req.body.isAuthor,
+			isAuthor: false,
 		});
 
 		if (!errors.isEmpty()) {
 			// Send JSON back with sanitized value
-			res.json({ user, errors });
+			res.status(403).json({ errors });
 		} else {
 			// Data from form is valid and username is not duplicate
 			// Hash the password and add to user object
@@ -97,8 +96,8 @@ exports.user_create = [
 				} else {
 					user.password = hashedPassword;
 					await user.save();
-					// change redirect to posts after debug
-					res.redirect("/api/users");
+					// move to next
+					res.status(200).json({ message: "User Created" });
 				}
 			});
 		}

@@ -1,6 +1,6 @@
 import "./App.css";
 import { useEffect, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import NavBar from "./components/NavBar";
 
 function PostItem({ post }) {
@@ -39,6 +39,8 @@ function App() {
 	const [posts, setPosts] = useState(null);
 	const [user, setUser] = useState(null);
 
+	const navigate = useNavigate();
+
 	useEffect(() => {
 		async function fetchPosts() {
 			try {
@@ -50,16 +52,19 @@ function App() {
 						)}`,
 					}),
 				});
-				response = await response.json();
-				console.log(response);
-				setPosts(response.posts);
-				setUser(response.user);
+				if (response.status === 200) {
+					response = await response.json();
+					setPosts(response.posts);
+					setUser(response.user);
+				} else {
+					navigate("/users/login");
+				}
 			} catch (e) {
 				console.log(e);
 			}
 		}
 		fetchPosts();
-	}, []);
+	}, [navigate]);
 
 	if (user) {
 		return (

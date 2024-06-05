@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams, useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
 
 function CommentItem({ comment }) {
@@ -28,6 +28,8 @@ function Post() {
 	const [comments, setComments] = useState(null);
 	const { postId } = useParams();
 
+	const navigate = useNavigate();
+
 	useEffect(() => {
 		async function fetchPost() {
 			try {
@@ -42,16 +44,20 @@ function Post() {
 						}),
 					},
 				);
-				response = await response.json();
-				setPost(response.post);
-				setComments(response.comments);
-				setUser(response.user);
+				if (response.status === 200) {
+					response = await response.json();
+					setPost(response.post);
+					setComments(response.comments);
+					setUser(response.user);
+				} else {
+					navigate("/users/login");
+				}
 			} catch (e) {
 				console.log(e);
 			}
 		}
 		fetchPost();
-	}, [postId]);
+	}, [navigate, postId]);
 
 	if (post === undefined) {
 		const message = "Post was not found";

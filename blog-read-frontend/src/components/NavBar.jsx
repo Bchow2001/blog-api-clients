@@ -16,7 +16,11 @@ function NavBar(props) {
 			</div>
 			<div>
 				{!user ? (
-					<Link to="/users/login">Log In </Link>
+					<>
+						{" "}
+						<Link to="/users/login">Log In </Link>
+						<Link to="/users/register">Register</Link>
+					</>
 				) : (
 					<>
 						<Link to="/posts">Posts</Link>
