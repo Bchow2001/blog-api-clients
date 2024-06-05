@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
+import NavBar from "./NavBar";
 
 function CommentItem({ comment }) {
 	return (
@@ -22,6 +23,7 @@ function CommentList({ comments }) {
 }
 
 function Post() {
+	const [user, setUser] = useState(null);
 	const [post, setPost] = useState(null);
 	const [comments, setComments] = useState(null);
 	const { postId } = useParams();
@@ -33,11 +35,17 @@ function Post() {
 					`http://localhost:3000/api/posts/${postId}`,
 					{
 						mode: "cors",
+						headers: new Headers({
+							Authorization: `Bearer ${localStorage.getItem(
+								"accessToken",
+							)}`,
+						}),
 					},
 				);
 				response = await response.json();
 				setPost(response.post);
 				setComments(response.comments);
+				setUser(response.user);
 			} catch (e) {
 				console.log(e);
 			}
@@ -51,6 +59,7 @@ function Post() {
 	} else if (post !== null) {
 		return (
 			<>
+				<NavBar user={user} />
 				<h1>{post.title}</h1>
 				<h2>Written by: {post.author.username}</h2>
 				<p>{post.text}</p>

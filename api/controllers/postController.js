@@ -33,7 +33,9 @@ exports.post_detail = asyncHandler(async (req, res, next) => {
 		return next(err);
 	}
 
-	res.json({ post, comments });
+	const user = req.user.username;
+
+	res.json({ post, comments, user });
 });
 
 // POST Post creation

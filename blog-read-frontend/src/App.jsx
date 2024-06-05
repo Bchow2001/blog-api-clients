@@ -61,13 +61,17 @@ function App() {
 		fetchPosts();
 	}, []);
 
-	return (
-		<>
-			<NavBar user={user} />
-			<h1>Posts</h1>
-			{posts != null && <PostList posts={posts} />}
-		</>
-	);
+	if (user) {
+		return (
+			<>
+				<NavBar user={user} />
+				<h1>Posts</h1>
+				{posts != null && <PostList posts={posts} />}
+			</>
+		);
+	} else {
+		<Navigate to="/users/login" />;
+	}
 }
 
 export default App;

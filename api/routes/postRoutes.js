@@ -21,7 +21,11 @@ router.post(
 );
 
 // GET single post
-router.get("/:postid", postController.post_detail);
+router.get(
+	"/:postid",
+	passport.authenticate("jwt-view", { session: false }),
+	postController.post_detail,
+);
 
 // PUT post
 router.put(
@@ -47,14 +51,14 @@ router.post(
 // PUT comment
 router.put(
 	"/:postid/comments/:commentid",
-	passport.authenticate("jwt-view", { session: false }),
+	passport.authenticate("jwt-author", { session: false }),
 	postController.comment_update,
 );
 
 // DELETE comment
 router.delete(
 	"/:postid/comments/:commentid",
-	passport.authenticate("jwt-view", { session: false }),
+	passport.authenticate("jwt-author", { session: false }),
 	postController.comment_delete,
 );
 
