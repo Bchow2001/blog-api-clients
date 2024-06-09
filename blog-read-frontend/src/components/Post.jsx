@@ -26,9 +26,43 @@ function Post() {
 	const [user, setUser] = useState(null);
 	const [post, setPost] = useState(null);
 	const [comments, setComments] = useState(null);
+	const [newComment, setNewComment] = useState(null);
+	const [commentError, setCommentError] = useState(null);
 	const { postId } = useParams();
 
 	const navigate = useNavigate();
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		const requestOptions = {
+			method: "Post",
+			headers: new Headers({
+				Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+				"Content-Type": "application/json",
+			}),
+			mode: "cors",
+			body: JSON.stringify({
+				text: newComment,
+			}),
+		};
+		try {
+			let response = await fetch(
+				`http://localhost:3000/api/posts/${postId}/comments`,
+				requestOptions,
+			);
+			console.log(response);
+			if (response.status === 403) {
+				response = await response.json();
+				setCommentError(response.errors.errors);
+			} else if (response.status === 200) {
+				setNewComment("");
+				setCommentError(null);
+				window.location.reload();
+			}
+		} catch (e) {
+			console.log(e);
+		}
+	};
 
 	useEffect(() => {
 		async function fetchPost() {
@@ -71,7 +105,26 @@ function Post() {
 				<p>{post.text}</p>
 				<hr />
 				<h3>Comments:</h3>
-				{comments != null && <CommentList comments={comments} />}
+				{comments.length != 0 ? (
+					<CommentList comments={comments} />
+				) : (
+					<p>There are no comments yet! Add your thoughts below :)</p>
+				)}
+				<form onSubmit={handleSubmit}>
+					<div className="form-group">
+						<label htmlFor="newComment">Submit new comment:</label>
+						<br />
+						<textarea
+							name="newComment"
+							id="newComment"
+							onChange={(e) => setNewComment(e.target.value)}
+						>
+							{newComment}
+						</textarea>
+					</div>
+					<button type="submit">Submit Comment</button>
+					{commentError !== null && <p>{commentError}</p>}
+				</form>
 			</>
 		);
 	}

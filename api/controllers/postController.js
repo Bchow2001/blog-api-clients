@@ -138,10 +138,10 @@ exports.comment_create = [
 
 		if (!errors.isEmpty()) {
 			// There are errors send JSON back with sanitized values
-			res.json({ comment, errors });
+			res.status(403).json({ errors });
 		} else {
 			await comment.save();
-			res.redirect(`/api/posts/${req.params.postid}`);
+			res.status(200).json({ message: "Comment Created" });
 		}
 	}),
 ];
