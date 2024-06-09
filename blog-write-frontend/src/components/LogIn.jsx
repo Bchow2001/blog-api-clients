@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
-import NavBar from "./NavBar";
 
 function LogIn() {
 	const [username, setUsername] = useState("");
@@ -21,7 +20,7 @@ function LogIn() {
 		};
 		try {
 			let response = await fetch(
-				"http://localhost:3000/api/users/login",
+				"http://localhost:3000/api/users/admin-login",
 				requestOptions,
 			);
 			response = await response.json();
@@ -43,7 +42,6 @@ function LogIn() {
 
 	return (
 		<>
-			<NavBar user={false} />
 			<form onSubmit={handleSubmit}>
 				<div className="form-group">
 					<label htmlFor="username">Username: </label>
@@ -70,7 +68,7 @@ function LogIn() {
 				<button type="submit">Submit</button>
 			</form>
 			<div>{error !== "" && <p>{error}</p>}</div>
-			{user && <Navigate to="/posts" />}
+			{/* {user && <Navigate to="/posts" />} */}
 		</>
 	);
 }

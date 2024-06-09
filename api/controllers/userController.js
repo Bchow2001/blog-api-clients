@@ -5,7 +5,6 @@ const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const Post = require("../models/post");
-const Comment = require("../models/comment");
 const User = require("../models/user");
 require("../config");
 
@@ -86,7 +85,7 @@ exports.user_create = [
 
 		if (!errors.isEmpty()) {
 			// Send JSON back with sanitized value
-			res.status(403).json({ errors });
+			res.status(403).json(errors);
 		} else {
 			// Data from form is valid and username is not duplicate
 			// Hash the password and add to user object
@@ -196,6 +195,66 @@ exports.user_login = [
 					}
 					if (!user) {
 						return res.json({ message });
+					}
+					const { _id } = user;
+
+					/** This is what ends up in our JWT */
+					const payload = { _id };
+
+					/** assigns payload to req.user */
+					req.login(payload, { session: false }, (error) => {
+						if (error) {
+							return res.status(400).send({ error });
+						}
+
+						/** generate a signed json web token and return it in the response */
+						const accessToken = jwt.sign(
+							payload,
+							process.env.JWT_SECRET,
+							{ expiresIn: "30m" },
+						);
+
+						/** assign our jwt to the cookie */
+						res.json({ accessToken });
+					});
+				},
+			)(req, res, next);
+		}
+	}),
+];
+
+exports.admin_login = [
+	body("username")
+		.trim()
+		.notEmpty()
+		.withMessage("Please enter a username")
+		.escape(),
+	body("password")
+		.trim()
+		.notEmpty()
+		.withMessage("Please enter a password")
+		.escape(),
+
+	asyncHandler(async (req, res, next) => {
+		const errors = validationResult(req);
+
+		if (!errors.isEmpty()) {
+			// There are errors
+			res.json({ errors });
+		} else {
+			passport.authenticate(
+				"local",
+				{ session: false },
+				(err, user, message) => {
+					if (err) {
+						return res.json({ err });
+					}
+					if (!user) {
+						return res.json(message);
+					}
+					if (!user.isAuthor) {
+						const msg = "You are not an author";
+						return res.json({ message: msg });
 					}
 					const { _id } = user;
 

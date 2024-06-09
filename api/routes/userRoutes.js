@@ -13,6 +13,9 @@ router.post("/", userController.user_create);
 // Log-in
 router.post("/login", userController.user_login);
 
+// Admin Log-in
+router.post("/admin-login", userController.admin_login);
+
 // GET single user
 router.get("/:userid", userController.user_detail);
 

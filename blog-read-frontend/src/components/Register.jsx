@@ -34,7 +34,7 @@ function Register() {
 				response = await response.json();
 				setPassword("");
 				setConfirm("");
-				setErrors(response.errors.errors);
+				setErrors(response.errors);
 			} else if (response.status === 200) {
 				navigate("/users/login");
 			}
