@@ -68,7 +68,7 @@ function LogIn() {
 				<button type="submit">Submit</button>
 			</form>
 			<div>{error !== "" && <p>{error}</p>}</div>
-			{/* {user && <Navigate to="/posts" />} */}
+			{user && <Navigate to="/" />}
 		</>
 	);
 }

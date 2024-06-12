@@ -50,7 +50,6 @@ function Post() {
 				`http://localhost:3000/api/posts/${postId}/comments`,
 				requestOptions,
 			);
-			console.log(response);
 			if (response.status === 403) {
 				response = await response.json();
 				setCommentError(response.errors.errors);
