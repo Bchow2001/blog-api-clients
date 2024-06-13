@@ -62,10 +62,10 @@ exports.post_create = [
 
 		if (!errors.isEmpty()) {
 			// Send JSON back with sanitized value
-			res.json({ post, errors });
+			res.status(403).json(errors);
 		} else {
 			await post.save();
-			res.redirect("/api/posts");
+			res.status(200).json({ message: "Post Created" });
 		}
 	}),
 ];
@@ -138,7 +138,7 @@ exports.comment_create = [
 
 		if (!errors.isEmpty()) {
 			// There are errors send JSON back with sanitized values
-			res.status(403).json({ errors });
+			res.status(403).json(errors);
 		} else {
 			await comment.save();
 			res.status(200).json({ message: "Comment Created" });

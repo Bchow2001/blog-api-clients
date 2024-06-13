@@ -52,7 +52,7 @@ function Post() {
 			);
 			if (response.status === 403) {
 				response = await response.json();
-				setCommentError(response.errors.errors);
+				setCommentError(response.errors);
 			} else if (response.status === 200) {
 				setNewComment("");
 				setCommentError(null);

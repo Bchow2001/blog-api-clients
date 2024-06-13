@@ -120,7 +120,7 @@ function App() {
 					setPosts(response.posts);
 					setUser(response.user);
 				} else {
-					navigate("/users/login");
+					navigate("/login");
 				}
 			} catch (e) {
 				console.log(e);
@@ -138,7 +138,7 @@ function App() {
 			</>
 		);
 	} else {
-		<Navigate to="/login" />;
+		<Navigate to="/" />;
 	}
 }
 
