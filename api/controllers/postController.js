@@ -8,15 +8,25 @@ const post = require("../models/post");
 
 // GET Posts
 exports.index = asyncHandler(async (req, res, next) => {
-	const posts = await Post.find({ published: true })
-		.sort({ updatedAt: -1 })
-		.limit(20)
-		.select("title createdAt updatedAt author")
-		.populate("author", "username -_id")
-		.exec();
-
-	const user = req.user.username;
-	res.json({ posts, user });
+	if (req.user.isAuthor) {
+		const posts = await Post.find()
+			.sort({ updatedAt: -1 })
+			.limit(20)
+			.select("title createdAt updatedAt author")
+			.populate("author", "username -_id")
+			.exec();
+		const user = req.user.username;
+		res.json({ posts, user });
+	} else {
+		const posts = await Post.find({ published: true })
+			.sort({ updatedAt: -1 })
+			.limit(20)
+			.select("title createdAt updatedAt author")
+			.populate("author", "username -_id")
+			.exec();
+		const user = req.user.username;
+		res.json({ posts, user });
+	}
 });
 
 // GET Single Post
