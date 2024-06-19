@@ -1,4 +1,6 @@
 const express = require("express");
+const passport = require("passport");
+require("../config");
 
 const router = express.Router();
 
@@ -15,6 +17,13 @@ router.post("/login", userController.user_login);
 
 // Admin Log-in
 router.post("/admin-login", userController.admin_login);
+
+// Authorized
+router.get(
+	"/admin-login",
+	passport.authenticate("jwt-author", { session: false }),
+	userController.is_logged_in,
+);
 
 // GET single user
 router.get("/:userid", userController.user_detail);

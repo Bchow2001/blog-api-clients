@@ -282,3 +282,13 @@ exports.admin_login = [
 		}
 	}),
 ];
+
+exports.is_logged_in = asyncHandler(async (req, res, next) => {
+	const user = await User.findById(req.user.id);
+	if (!user) {
+		res.status(401).json({ message: "Unauthorized" });
+	} else if (!user.isAuthor) {
+		res.status(401).json({ message: "You are not an Author" });
+	}
+	res.status(200).json({ message: "Authorized" });
+});

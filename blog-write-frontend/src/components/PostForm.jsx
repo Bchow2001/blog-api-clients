@@ -1,13 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function PostForm() {
 	const [title, setTitle] = useState("");
 	const [text, setText] = useState("");
 	const [published, setPublished] = useState(true);
-	const [errors, setErrors] = useState(null);
+	const [errors, setErrors] = useState([]);
 
 	const navigate = useNavigate();
+
+	useEffect(() => {
+		async function checkAuthorize() {
+			const requestOptions = {
+				method: "GET",
+				headers: new Headers({
+					Authorization: `Bearer ${localStorage.getItem(
+						"accessToken",
+					)}`,
+					"Content-Type": "application/json",
+				}),
+				mode: "cors",
+			};
+			try {
+				let response = await fetch(
+					`http://localhost:3000/api/users/admin-login`,
+					requestOptions,
+				);
+				if (response.status !== 200) {
+					navigate("/login");
+				}
+			} catch (e) {
+				navigate("/login");
+				console.log(e);
+			}
+		}
+		checkAuthorize();
+	}, [navigate]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
