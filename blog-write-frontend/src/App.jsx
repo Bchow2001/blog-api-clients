@@ -26,7 +26,7 @@ function App() {
 					<p>Updated at: {post.updatedAt}</p>
 				)}
 				<div>
-					<button>Update Post</button>
+					<Link to={`/update-post/${post._id}`}>Update Form</Link>
 					<button
 						onClick={() => {
 							setPostDelete(post);
