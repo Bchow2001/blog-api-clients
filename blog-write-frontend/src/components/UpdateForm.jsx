@@ -58,7 +58,7 @@ function UpdateForm() {
 		};
 		try {
 			let response = await fetch(
-				`http://localhost:3000/api/posts`,
+				`http://localhost:3000/api/posts/${postId}`,
 				requestOptions,
 			);
 			if (response.status === 200) {
@@ -108,12 +108,7 @@ function UpdateForm() {
 				</div>
 				<button type="submit">Submit</button>
 			</form>
-			<div>
-				{errors.length !== 0 &&
-					errors.map((error) => {
-						return <p key={error.path}>{error.msg}</p>;
-					})}
-			</div>
+			<div></div>
 		</>
 	);
 }

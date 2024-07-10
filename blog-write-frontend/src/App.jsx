@@ -14,7 +14,7 @@ function App() {
 	function PostItem({ post }) {
 		return (
 			<li>
-				<Link to={`${post._id}`}>
+				<Link to={`/posts/${post._id}`}>
 					<h2>{post.title}</h2>
 				</Link>
 				<h3>
